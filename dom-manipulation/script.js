@@ -1,10 +1,10 @@
+
 // Array to store quotes
 const quotes = [
   { text: "The best way to predict the future is to invent it.", category: "Innovation" },
   { text: "Life is what happens when you're busy making other plans.", category: "Life" },
   { text: "The purpose of our lives is to be happy.", category: "Life" }
-];
-
+ ];
 // Function to display a random quote
 function showRandomQuote() {
   // Check if the quotes array is not empty
@@ -40,7 +40,7 @@ function addQuote() {
   document.getElementById('newQuoteText').value = '';
   document.getElementById('newQuoteCategory').value = '';
 
-  // Optionally, you can also display the newly added quote immediately
+  // Display the newly added quote immediately
   showRandomQuote();
 }
 
@@ -52,3 +52,4 @@ document.getElementById('addQuote').addEventListener('click', addQuote);
 document.addEventListener('DOMContentLoaded', () => {
   showRandomQuote();
 });
+
