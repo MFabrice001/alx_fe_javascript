@@ -1,3 +1,44 @@
+
+document.addEventListener('DOMContentLoaded', () => {
+    const quotes = [
+        { text: "The only limit to our realization of tomorrow is our doubts of today.", category: "Inspiration" },
+        { text: "Life is what happens when you're busy making other plans.", category: "Life" },
+        // Add more quotes here
+    ];
+
+    const quoteDisplay = document.getElementById('quoteDisplay');
+    const newQuoteButton = document.getElementById('newQuote');
+    const addQuoteButton = document.getElementById('addQuote');
+
+    function showRandomQuote() {
+        const randomIndex = Math.floor(Math.random() * quotes.length);
+        const randomQuote = quotes[randomIndex];
+        quoteDisplay.textContent = `${randomQuote.text} - ${randomQuote.category}`;
+    }
+
+    function addQuote() {
+        const newQuoteText = document.getElementById('newQuoteText').value.trim();
+        const newQuoteCategory = document.getElementById('newQuoteCategory').value.trim();
+
+        if (newQuoteText && newQuoteCategory) {
+            const newQuote = { text: newQuoteText, category: newQuoteCategory };
+            quotes.push(newQuote);
+            document.getElementById('newQuoteText').value = '';
+            document.getElementById('newQuoteCategory').value = '';
+            alert("New quote added!");
+        } else {
+            alert("Please enter both quote text and category.");
+        }
+    }
+
+    newQuoteButton.addEventListener('click', showRandomQuote);
+    addQuoteButton.addEventListener('click', addQuote);
+
+    // Show a random quote on initial load
+    showRandomQuote();
+});
+
+
 //  2 // Array to store quotes
 // let quotes = JSON.parse(localStorage.getItem('quotes')) || [
 //   { text: "The best way to predict the future is to invent it.", category: "Innovation" },
@@ -111,123 +152,123 @@
 
 
 // API Endpoint (replace with your actual mock API URL)
-const API_URL = 'https://jsonplaceholder.typicode.com/quotes';
+// const API_URL = 'https://jsonplaceholder.typicode.com/quotes';
 
-// Load quotes from local storage or initialize with empty array
-let quotes = JSON.parse(localStorage.getItem('quotes')) || [];
+// // Load quotes from local storage or initialize with empty array
+// let quotes = JSON.parse(localStorage.getItem('quotes')) || [];
 
-// Fetch quotes from the server
-async function fetchQuotesFromServer() {
-    try {
-        const response = await fetch(API_URL);
-        if (!response.ok) throw new Error('Network response was not ok.');
-        const serverQuotes = await response.json();
+// // Fetch quotes from the server
+// async function fetchQuotesFromServer() {
+//     try {
+//         const response = await fetch(API_URL);
+//         if (!response.ok) throw new Error('Network response was not ok.');
+//         const serverQuotes = await response.json();
         
-        // Update local quotes with server data
-        if (serverQuotes.length) {
-            quotes = serverQuotes;
-            localStorage.setItem('quotes', JSON.stringify(quotes));
-            updateCategoryFilter();
-            showRandomQuote();
-        }
-    } catch (error) {
-        console.error('Failed to fetch quotes from server:', error);
-    }
-}
+//         // Update local quotes with server data
+//         if (serverQuotes.length) {
+//             quotes = serverQuotes;
+//             localStorage.setItem('quotes', JSON.stringify(quotes));
+//             updateCategoryFilter();
+//             showRandomQuote();
+//         }
+//     } catch (error) {
+//         console.error('Failed to fetch quotes from server:', error);
+//     }
+// }
 
-// Sync local data with the server
-async function syncWithServer() {
-    try {
-        // Get existing quotes from local storage
-        const localQuotes = JSON.parse(localStorage.getItem('quotes')) || [];
+// // Sync local data with the server
+// async function syncWithServer() {
+//     try {
+//         // Get existing quotes from local storage
+//         const localQuotes = JSON.parse(localStorage.getItem('quotes')) || [];
 
-        // Check for conflicts and merge data
-        // Here we're assuming server data has precedence
-        await fetchQuotesFromServer();
+//         // Check for conflicts and merge data
+//         // Here we're assuming server data has precedence
+//         await fetchQuotesFromServer();
 
-        // Optionally, send local changes to the server if needed
-        // await updateServerWithLocalData(localQuotes);
-    } catch (error) {
-        console.error('Sync failed:', error);
-    }
-}
+//         // Optionally, send local changes to the server if needed
+//         // await updateServerWithLocalData(localQuotes);
+//     } catch (error) {
+//         console.error('Sync failed:', error);
+//     }
+// }
 
-// Handle conflicts (example: server data takes precedence)
-function handleConflict(localData, serverData) {
-    return serverData; // Simple strategy: server data takes precedence
-}
+// // Handle conflicts (example: server data takes precedence)
+// function handleConflict(localData, serverData) {
+//     return serverData; // Simple strategy: server data takes precedence
+// }
 
-// Update the server with local data (example function)
-async function updateServerWithLocalData(localData) {
-    try {
-        const response = await fetch(API_URL, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(localData),
-        });
-        if (!response.ok) throw new Error('Network response was not ok.');
-    } catch (error) {
-        console.error('Failed to update server:', error);
-    }
-}
+// // Update the server with local data (example function)
+// async function updateServerWithLocalData(localData) {
+//     try {
+//         const response = await fetch(API_URL, {
+//             method: 'PUT',
+//             headers: { 'Content-Type': 'application/json' },
+//             body: JSON.stringify(localData),
+//         });
+//         if (!response.ok) throw new Error('Network response was not ok.');
+//     } catch (error) {
+//         console.error('Failed to update server:', error);
+//     }
+// }
 
-// Add a new quote
-async function addQuote() {
-    const newQuoteText = document.getElementById('newQuoteText').value.trim();
-    const newQuoteCategory = document.getElementById('newQuoteCategory').value.trim();
+// // Add a new quote
+// async function addQuote() {
+//     const newQuoteText = document.getElementById('newQuoteText').value.trim();
+//     const newQuoteCategory = document.getElementById('newQuoteCategory').value.trim();
 
-    if (newQuoteText === '' || newQuoteCategory === '') {
-        alert('Please fill in both fields.');
-        return;
-    }
+//     if (newQuoteText === '' || newQuoteCategory === '') {
+//         alert('Please fill in both fields.');
+//         return;
+//     }
 
-    const newQuote = { text: newQuoteText, category: newQuoteCategory };
+//     const newQuote = { text: newQuoteText, category: newQuoteCategory };
 
-    try {
-        const response = await fetch(API_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(newQuote),
-        });
-        if (!response.ok) throw new Error('Network response was not ok.');
+//     try {
+//         const response = await fetch(API_URL, {
+//             method: 'POST',
+//             headers: { 'Content-Type': 'application/json' },
+//             body: JSON.stringify(newQuote),
+//         });
+//         if (!response.ok) throw new Error('Network response was not ok.');
 
-        const addedQuote = await response.json();
-        quotes.push(addedQuote);
-        saveQuotes();
-        updateCategoryFilter();
-        showRandomQuote();
-    } catch (error) {
-        console.error('Failed to add quote:', error);
-    }
-}
+//         const addedQuote = await response.json();
+//         quotes.push(addedQuote);
+//         saveQuotes();
+//         updateCategoryFilter();
+//         showRandomQuote();
+//     } catch (error) {
+//         console.error('Failed to add quote:', error);
+//     }
+// }
 
-// Save quotes to local storage
-function saveQuotes() {
-    localStorage.setItem('quotes', JSON.stringify(quotes));
-}
+// // Save quotes to local storage
+// function saveQuotes() {
+//     localStorage.setItem('quotes', JSON.stringify(quotes));
+// }
 
-// Event listeners
-document.getElementById('newQuote').addEventListener('click', showRandomQuote);
-document.getElementById('addQuote').addEventListener('click', addQuote);
-document.getElementById('exportQuotes').addEventListener('click', exportToJson);
-document.getElementById('importFile').addEventListener('change', importFromJsonFile);
-document.getElementById('categoryFilter').addEventListener('change', () => {
-    filterQuotes();
-    saveCategoryFilter();
-});
+// // Event listeners
+// document.getElementById('newQuote').addEventListener('click', showRandomQuote);
+// document.getElementById('addQuote').addEventListener('click', addQuote);
+// document.getElementById('exportQuotes').addEventListener('click', exportToJson);
+// document.getElementById('importFile').addEventListener('change', importFromJsonFile);
+// document.getElementById('categoryFilter').addEventListener('change', () => {
+//     filterQuotes();
+//     saveCategoryFilter();
+// });
 
-// Initialize
-document.addEventListener('DOMContentLoaded', () => {
-    loadQuotes();
-    updateCategoryFilter();
-    showRandomQuote();
-    setInterval(syncWithServer, 60000); // Sync every 60 seconds
-});
+// // Initialize
+// document.addEventListener('DOMContentLoaded', () => {
+//     loadQuotes();
+//     updateCategoryFilter();
+//     showRandomQuote();
+//     setInterval(syncWithServer, 60000); // Sync every 60 seconds
+// });
 
 
-function handleConflict(localData, serverData) {
-  // Example conflict resolution
-  // Notify the user or show options to manually resolve conflicts
-  alert('Data conflict detected. Server data has been applied.');
-  return serverData;
-}
+// function handleConflict(localData, serverData) {
+//   // Example conflict resolution
+//   // Notify the user or show options to manually resolve conflicts
+//   alert('Data conflict detected. Server data has been applied.');
+//   return serverData;
+// }
