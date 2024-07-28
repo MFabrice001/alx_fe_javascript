@@ -3,15 +3,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const quoteDisplay = document.getElementById('quoteDisplay');
     const newQuoteButton = document.getElementById('newQuote');
     const addQuoteButton = document.getElementById('addQuote');
-    const exportQuotesButton = document.getElementById('exportQuotes');
     const categoryFilter = document.getElementById('categoryFilter');
     const notification = document.getElementById('notification');
 
     const SERVER_URL = 'https://jsonplaceholder.typicode.com/posts'; // Mock server URL
-
-    function saveQuotes() {
-        localStorage.setItem('quotes', JSON.stringify(quotes));
-    }
 
     function populateCategories() {
         const categories = [...new Set(quotes.map(quote => quote.category))];
@@ -59,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (newQuoteText && newQuoteCategory) {
             const newQuote = { text: newQuoteText, category: newQuoteCategory };
             quotes.push(newQuote);
-            saveQuotes();
+            localStorage.setItem('quotes', JSON.stringify(quotes));
             document.getElementById('newQuoteText').value = '';
             document.getElementById('newQuoteCategory').value = '';
             alert("New quote added!");
@@ -133,32 +128,8 @@ document.addEventListener('DOMContentLoaded', () => {
         filterQuotes();
     }
 
-    function exportToJson() {
-        const blob = new Blob([JSON.stringify(quotes, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'quotes.json';
-        a.click();
-        URL.revokeObjectURL(url);
-    }
-
-    function importFromJsonFile(event) {
-        const fileReader = new FileReader();
-        fileReader.onload = function(event) {
-            const importedQuotes = JSON.parse(event.target.result);
-            quotes.push(...importedQuotes);
-            saveQuotes();
-            alert('Quotes imported successfully!');
-            filterQuotes();
-        };
-        fileReader.readAsText(event.target.files[0]);
-    }
-
     newQuoteButton.addEventListener('click', showRandomQuote);
     addQuoteButton.addEventListener('click', addQuote);
-    exportQuotesButton.addEventListener('click', exportToJson);
-    document.getElementById('importFile').addEventListener('change', importFromJsonFile);
 
     populateCategories();
     filterQuotes();
