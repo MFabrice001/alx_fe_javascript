@@ -1,3 +1,4 @@
+
 document.addEventListener('DOMContentLoaded', () => {
     const quotes = JSON.parse(localStorage.getItem('quotes')) || [];
     const quoteDisplay = document.getElementById('quoteDisplay');
