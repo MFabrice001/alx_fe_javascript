@@ -66,6 +66,7 @@ function submitNewQuote() {
         addQuote(text, category);
         document.getElementById('newQuoteText').value = '';
         document.getElementById('newQuoteCategory').value = '';
+        postQuoteToServer({ text, category });
     } else {
         alert('Please enter both a quote and a category.');
     }
@@ -105,6 +106,23 @@ async function fetchQuotesFromServer() {
     } catch (error) {
         console.error('Error fetching quotes from server:', error);
         return [];
+    }
+}
+
+// Function to post a new quote to the server
+async function postQuoteToServer(quote) {
+    try {
+        const response = await fetch('https://jsonplaceholder.typicode.com/posts', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(quote)
+        });
+        const result = await response.json();
+        console.log('Quote posted to server:', result);
+    } catch (error) {
+        console.error('Error posting quote to server:', error);
     }
 }
 
