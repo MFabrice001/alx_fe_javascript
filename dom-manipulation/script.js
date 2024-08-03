@@ -1,6 +1,9 @@
 let quotes = [];
 
-document.addEventListener('DOMContentLoaded', loadQuotes);
+document.addEventListener('DOMContentLoaded', () => {
+    loadQuotes();
+    setInterval(syncQuotesWithServer, 60000); // Sync with server every 60 seconds
+});
 
 document.getElementById('newQuote').addEventListener('click', showRandomQuote);
 document.getElementById('importFile').addEventListener('change', importFromJsonFile);
