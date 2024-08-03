@@ -138,10 +138,10 @@ async function syncQuotesWithServer() {
         
         quotes = uniqueQuotes;
         saveQuotes();
-        alert('Quotes synced successfully with the server!');
+        showNotification('Quotes synced with server!');
     } catch (error) {
         console.error('Error syncing quotes:', error);
-        alert('Failed to sync quotes with the server.');
+        showNotification('Failed to sync quotes with server.');
     }
 }
 
@@ -165,6 +165,15 @@ function renderFilteredQuotes(filteredQuotes) {
         quoteElement.textContent = `${quote.text} - ${quote.category}`;
         quoteDisplay.appendChild(quoteElement);
     });
+}
+
+// Function to show notifications
+function showNotification(message) {
+    const notificationElement = document.getElementById('notifications');
+    notificationElement.textContent = message;
+    setTimeout(() => {
+        notificationElement.textContent = '';
+    }, 5000); // Hide notification after 5 seconds
 }
 
 // Add categories to the filter dropdown
