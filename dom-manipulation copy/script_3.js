@@ -2,11 +2,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const quotes = JSON.parse(localStorage.getItem('quotes')) || [];
     const quoteDisplay = document.getElementById('quoteDisplay');
     const newQuoteButton = document.getElementById('newQuote');
+    const addQuoteButton = document.getElementById('addQuote');
     const categoryFilter = document.getElementById('categoryFilter');
+    const notification = document.getElementById('notification');
 
-    function saveQuotes() {
-        localStorage.setItem('quotes', JSON.stringify(quotes));
-    }
+    const SERVER_URL = 'https://jsonplaceholder.typicode.com/posts'; // Mock server URL
 
     function populateCategories() {
         const categories = [...new Set(quotes.map(quote => quote.category))];
@@ -16,10 +16,12 @@ document.addEventListener('DOMContentLoaded', () => {
             option.textContent = category;
             categoryFilter.appendChild(option);
         });
+        loadLastSelectedFilter();
     }
 
     function filterQuotes() {
         const selectedCategory = categoryFilter.value;
+        localStorage.setItem('selectedCategory', selectedCategory);
         const filteredQuotes = selectedCategory === 'all' 
             ? quotes 
             : quotes.filter(quote => quote.category === selectedCategory);
@@ -45,32 +47,6 @@ document.addEventListener('DOMContentLoaded', () => {
         quoteDisplay.textContent = `${randomQuote.text} - ${randomQuote.category}`;
     }
 
-    function createAddQuoteForm() {
-        const formContainer = document.createElement('div');
-
-        const quoteInput = document.createElement('input');
-        quoteInput.id = 'newQuoteText';
-        quoteInput.type = 'text';
-        quoteInput.placeholder = 'Enter a new quote';
-
-        const categoryInput = document.createElement('input');
-        categoryInput.id = 'newQuoteCategory';
-        categoryInput.type = 'text';
-        categoryInput.placeholder = 'Enter quote category';
-
-        const addButton = document.createElement('button');
-        addButton.id = 'addQuote';
-        addButton.textContent = 'Add Quote';
-
-        formContainer.appendChild(quoteInput);
-        formContainer.appendChild(categoryInput);
-        formContainer.appendChild(addButton);
-
-        document.body.appendChild(formContainer);
-
-        addButton.addEventListener('click', addQuote);
-    }
-
     function addQuote() {
         const newQuoteText = document.getElementById('newQuoteText').value.trim();
         const newQuoteCategory = document.getElementById('newQuoteCategory').value.trim();
@@ -78,12 +54,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (newQuoteText && newQuoteCategory) {
             const newQuote = { text: newQuoteText, category: newQuoteCategory };
             quotes.push(newQuote);
-            saveQuotes();
+            localStorage.setItem('quotes', JSON.stringify(quotes));
             document.getElementById('newQuoteText').value = '';
             document.getElementById('newQuoteCategory').value = '';
             alert("New quote added!");
             updateCategories(newQuoteCategory);
-            filterQuotes();
+            syncWithServer(newQuote);
         } else {
             alert("Please enter both quote text and category.");
         }
@@ -98,9 +74,66 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function loadLastSelectedFilter() {
+        const selectedCategory = localStorage.getItem('selectedCategory');
+        if (selectedCategory) {
+            categoryFilter.value = selectedCategory;
+        }
+        filterQuotes();
+    }
+
+    function syncWithServer(newQuote) {
+        fetch(SERVER_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(newQuote),
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Successfully synced with server:', data);
+        })
+        .catch(error => console.error('Error syncing with server:', error));
+    }
+
+    function fetchServerData() {
+        fetch(SERVER_URL)
+            .then(response => response.json())
+            .then(data => {
+                const serverQuotes = data.map(post => ({ text: post.title, category: 'Server' }));
+                mergeQuotes(serverQuotes);
+            })
+            .catch(error => console.error('Error fetching data from server:', error));
+    }
+
+    function mergeQuotes(serverQuotes) {
+        const localQuotes = JSON.parse(localStorage.getItem('quotes')) || [];
+        const mergedQuotes = [...localQuotes, ...serverQuotes];
+        localStorage.setItem('quotes', JSON.stringify(mergedQuotes));
+        quotes.length = 0;
+        quotes.push(...mergedQuotes);
+        filterQuotes();
+        notification.textContent = 'Data synchronized with server';
+        notification.style.display = 'block';
+        setTimeout(() => { notification.style.display = 'none'; }, 3000);
+    }
+
+    function handleConflictResolution() {
+        const localQuotes = JSON.parse(localStorage.getItem('quotes')) || [];
+        // Assume server quotes always take precedence for simplicity
+        localStorage.setItem('quotes', JSON.stringify(localQuotes));
+        quotes.length = 0;
+        quotes.push(...localQuotes);
+        filterQuotes();
+    }
+
     newQuoteButton.addEventListener('click', showRandomQuote);
+    addQuoteButton.addEventListener('click', addQuote);
 
     populateCategories();
     filterQuotes();
-    createAddQuoteForm(); // Call createAddQuoteForm to add the form on page load
+
+    // Simulate server data fetching every 10 seconds
+    setInterval(fetchServerData, 10000);
 });
