@@ -2,7 +2,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const quotes = JSON.parse(localStorage.getItem('quotes')) || [];
     const quoteDisplay = document.getElementById('quoteDisplay');
     const newQuoteButton = document.getElementById('newQuote');
-    const addQuoteButton = document.getElementById('addQuote');
     const categoryFilter = document.getElementById('categoryFilter');
 
     function saveQuotes() {
@@ -46,6 +45,32 @@ document.addEventListener('DOMContentLoaded', () => {
         quoteDisplay.textContent = `${randomQuote.text} - ${randomQuote.category}`;
     }
 
+    function createAddQuoteForm() {
+        const formContainer = document.createElement('div');
+
+        const quoteInput = document.createElement('input');
+        quoteInput.id = 'newQuoteText';
+        quoteInput.type = 'text';
+        quoteInput.placeholder = 'Enter a new quote';
+
+        const categoryInput = document.createElement('input');
+        categoryInput.id = 'newQuoteCategory';
+        categoryInput.type = 'text';
+        categoryInput.placeholder = 'Enter quote category';
+
+        const addButton = document.createElement('button');
+        addButton.id = 'addQuote';
+        addButton.textContent = 'Add Quote';
+
+        formContainer.appendChild(quoteInput);
+        formContainer.appendChild(categoryInput);
+        formContainer.appendChild(addButton);
+
+        document.body.appendChild(formContainer);
+
+        addButton.addEventListener('click', addQuote);
+    }
+
     function addQuote() {
         const newQuoteText = document.getElementById('newQuoteText').value.trim();
         const newQuoteCategory = document.getElementById('newQuoteCategory').value.trim();
@@ -74,8 +99,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     newQuoteButton.addEventListener('click', showRandomQuote);
-    addQuoteButton.addEventListener('click', addQuote);
 
     populateCategories();
     filterQuotes();
+    createAddQuoteForm(); // Call createAddQuoteForm to add the form on page load
 });
